@@ -8,6 +8,8 @@ app.use(express.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+require('./module/linking');
+require('dotenv').config();
 const swaggerDocument = require('./swagger-output.json');
 app.use('/api_docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(3025, () => {
