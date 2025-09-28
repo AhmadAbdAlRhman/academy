@@ -1,0 +1,14 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Acadamy Project",
+    "description": "API Documentation",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3025",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {}
+}
