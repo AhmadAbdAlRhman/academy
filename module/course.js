@@ -4,27 +4,19 @@ const {
 
 const sequelize = require('../config/db');
 
-const Ads = sequelize.define('Ads', {
+const Course = sequelize.define('Course', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    title: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-    },
-    description: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-    },
-    photo: {
+    name: {
         type: DataTypes.STRING(100),
         allowNull: false
     }
 }, {
-    tableName: 'ads',
+    tableName: 'courses',
     timestamps: true,
 });
 
-module.exports = Ads;
+module.exports = Course;
