@@ -9,6 +9,10 @@ app.use(express.urlencoded({
 }));
 app.use(bodyParser.json());
 require('./module/linking');
+const admin = require('./routes/admin');
+const student = require('./routes/student');
+app.use('/admin', admin);
+app.use('/student', student);
 require('dotenv').config();
 const swaggerDocument = require('./swagger-output.json');
 app.use('/api_docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

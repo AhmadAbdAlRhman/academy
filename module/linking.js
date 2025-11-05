@@ -4,7 +4,6 @@ const Branch = require('./branch');
 const Student = require('./student');
 const BranchCourses = require('./branch_course');
 const Course = require('./course');
-const Teacher = require('./teacher');
 const Lecture = require('./lecture');
 const Intensive_courses = require('./Intensive courses');
 require('./ads');
@@ -17,12 +16,7 @@ Course.belongsToMany(Branch, {
     through: BranchCourses
 });
 // 222222222222222222222222222222222222222222222222222222222222222222222222222222222
-Teacher.hasMany(BranchCourses, {
-    foreignKey: 'teacherId'
-});
-BranchCourses.belongsTo(Teacher, {
-    foreignKey: 'teacherId'
-});
+
 // 333333333333333333333333333333333333333333333333333333333333333333333333333333333
 Student.hasMany(BranchCourses, {
     foreignKey: 'studentId'
