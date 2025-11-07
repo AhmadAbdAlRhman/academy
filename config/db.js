@@ -2,11 +2,17 @@ const {
     Sequelize
 } = require('sequelize');
 require('dotenv').config();
-const sequelize = new Sequelize(process.env.DataBase,process.env.DataUser, process.env.DataPass,{
+const sequelize = new Sequelize(process.env.DataBase, process.env.DataUser, process.env.DataPass, {
     host: 'localhost',
     dialect: 'mysql',
-    port:3000,
-    logging: false
+    port: 3000,
+    logging: false,
+    dialectOptions: {
+        // Site4now يحتاج SSL إجباري
+        ssl: {
+            rejectUnauthorized: false
+        }
+    }
 });
 
 (async () => {
