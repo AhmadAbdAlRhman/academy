@@ -3,7 +3,7 @@ const {
 } = require('sequelize');
 require('dotenv').config();
 const sequelize = new Sequelize(process.env.DataBase, process.env.DataUser, process.env.DataPass, {
-    host: 'localhost',
+    host: DB_HOST,
     dialect: 'mysql',
     port: 3000,
     logging: false,
