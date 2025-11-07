@@ -6,7 +6,11 @@
   "author": "Ahmad",
   "type": "commonjs",
   "main": "server.js",
+  "keywords": ["express", "sequelize", "swagger", "flip-card"],
   "scripts": {
+    "dev": "nodemon swagger.js",
+    "start": "node server.js",
+    "swagger": "node swagger.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

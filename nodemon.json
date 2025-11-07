@@ -1,0 +1,8 @@
+{
+    "ignore": [
+        "swagger_output.json",
+        "swagger.json",
+        "public/*.json",
+        "docs/"
+    ]
+}

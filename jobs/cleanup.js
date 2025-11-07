@@ -4,9 +4,9 @@ const {
     Op
 } = require('sequelize');
 const Student = require('../module/student');
-const {
-    sendWhatsApp
-} = require('../utils/whatsapp');
+// const {
+//     sendWhatsApp
+// } = require('../utils/whatsapp');
 async function cleanupExpiredCodes() {
     try {
         const now = new Date();

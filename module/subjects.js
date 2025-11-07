@@ -27,7 +27,7 @@ const Course = sequelize.define('Course', {
         allowNull: true
     }
 }, {
-    tableName: 'courses',
+    tableName: 'subjects',
     timestamps: true,
 });
 

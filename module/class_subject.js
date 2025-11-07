@@ -9,20 +9,8 @@ const BranchCourse = sequelize.define('BranchCourse', {
         autoIncrement: true,
         primaryKey: true,
     },
-    teacherId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-    },
-    studentId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-    },
-    startDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-    },
 }, {
-    tableName: 'branch_courses',
+    tableName: 'class_subject',
     timestamps: true,
 });
 

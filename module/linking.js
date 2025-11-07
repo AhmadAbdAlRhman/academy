@@ -1,43 +1,49 @@
 const sequelize = require('../config/db');
 
-const Branch = require('./branch');
+const Class = require('./class');
 const Student = require('./student');
-const BranchCourses = require('./branch_course');
-const Course = require('./course');
+const class_subject = require('./class_subject');
+const Subjects = require('./subjects');
 const Lecture = require('./lecture');
 const Intensive_courses = require('./Intensive courses');
+const Enrollment = require('./enrollment');
 require('./ads');
 
 // 111111111111111111111111111111111111111111111111111111111111111111111111111111111
-Branch.belongsToMany(Course, {
-    through: BranchCourses
+Class.belongsToMany(Subjects, {
+    through: class_subject
 });
-Course.belongsToMany(Branch, {
-    through: BranchCourses
+Subjects.belongsToMany(Class, {
+    through: class_subject
 });
 // 222222222222222222222222222222222222222222222222222222222222222222222222222222222
-
-// 333333333333333333333333333333333333333333333333333333333333333333333333333333333
-Student.hasMany(BranchCourses, {
-    foreignKey: 'studentId'
+Class.hasMany(Student, {
+    foreignKey: 'class_id'
 });
-BranchCourses.belongsTo(Student, {
-    foreignKey: 'studentId'
+Student.belongsTo(Class, {
+    foreignKey: 'class_id'
+});
+// 333333333333333333333333333333333333333333333333333333333333333333333333333333333
+class_subject.hasMany(Lecture, {
+    foreignKey: 'subject_id'
+});
+Lecture.belongsTo(class_subject, {
+    foreignKey: 'subject_id'
 });
 // 444444444444444444444444444444444444444444444444444444444444444444444444444444444
-BranchCourses.hasMany(Lecture, {
+class_subject.hasMany(Intensive_courses, {
     foreignKey: 'subject_id'
 });
-Lecture.belongsTo(BranchCourses, {
+Intensive_courses.belongsTo(class_subject, {
     foreignKey: 'subject_id'
-})
+});
 // 555555555555555555555555555555555555555555555555555555555555555555555555555555555
-BranchCourses.hasMany(Intensive_courses, {
-    foreignKey: 'subject_id'
+Student.belongsToMany(Subjects,{
+    through: Enrollment
 });
-Intensive_courses.belongsTo(BranchCourses, {
-    foreignKey: 'subject_id'
-})
+Subjects.belongsToMany(Student,{
+    through: Enrollment
+});
 // #################################################################################
 sequelize.sync({
     alter: true

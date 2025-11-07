@@ -43,7 +43,7 @@ module.exports.add_student = async (req, res) => {
             code: hashedCode, // الآن هو string مشفر
             registration_system: registration_system || "غير محدد",
             photo: photo || "https://i.imgur.com/7p1Xj1f.png",
-            hasPaid: true,
+            hasPaid: false,
             codeExpiresAt
         });
         res.status(201).json({
@@ -61,3 +61,8 @@ module.exports.add_student = async (req, res) => {
         });
     }
 };
+
+module.exports.registration_confirmation = async (req, res) =>{
+    
+}
+

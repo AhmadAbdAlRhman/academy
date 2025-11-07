@@ -23,8 +23,9 @@ const Student = sequelize.define('User', {
         allowNull: false
     },
     registration_system: {
-        type: DataTypes.STRING(100),
-        allowNull: false
+        type: DataTypes.ENUM('نظام صفي','نظام مواد'),
+        allowNull: false,
+        defaultValue:'نظام صفي'
     },
     hasPaid: {
         type: DataTypes.BOOLEAN,
