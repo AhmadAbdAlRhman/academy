@@ -5,11 +5,12 @@ require('dotenv').config();
 const sequelize = new Sequelize(process.env.DataBase, process.env.DataUser, process.env.DataPass, {
     host: process.env.DB_HOST,
     dialect: 'mysql',
-    port: 3000,
+    port: process.env.DB_PORT,
     logging: false,
     dialectOptions: {
         // Site4now يحتاج SSL إجباري
         ssl: {
+            require: true,  
             rejectUnauthorized: false
         }
     }
