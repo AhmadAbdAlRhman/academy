@@ -1,4 +1,6 @@
 const Student = require('../../module/student');
+const Subject = require('../../module/subjects');
+const Enrollement = require('../../module/enrollment');
 const {
     getFifthOfNextMonth
 } = require('../../functions/getFifthOfNextMonth');
@@ -10,14 +12,16 @@ const {
 } = require('../../utils/hash');
 
 module.exports.add_student = async (req, res) => {
-    const {
-        name,
-        phone,
-        registration_system,
-        photo
-    } = req.body;
-
     try {
+        const {
+            name,
+            phone,
+            registration_system,
+            class_id
+        } = req.body;
+        const subjectIds = req.body.subjectIds ? JSON.parse(req.bosdy.subjectIds) : [];
+        const photo = req.file ? req.file.filename : null;
+        const transaction = await Student.sequelize.transaction();
         const cleanPhone = phone.replace(/\s/g, '');
         if (!/^(09[3-9]\d{7}|9639\d{8}|\+9639\d{8})$/.test(cleanPhone)) {
             return res.status(400).json({
@@ -40,29 +44,57 @@ module.exports.add_student = async (req, res) => {
         const student = await Student.create({
             name,
             phone: cleanPhone,
-            code: hashedCode, // الآن هو string مشفر
-            registration_system: registration_system || "غير محدد",
-            photo: photo || "https://i.imgur.com/7p1Xj1f.png",
-            hasPaid: false,
+            code: hashedCode,
+            registration_system: registration_system,
+            photo: photo,
+            hasPaid: true,
             codeExpiresAt
+        }, {
+            transaction
         });
+        let enrollmentSubject = [];
+        if (registration_system === 'نظام صفي') {
+            const classSubject = await Subject.findAll({
+                where: {
+                    class_id
+                }
+            });
+            enrollmentSubject = classSubject.map((s) => s.id);
+        } else if (registration_system === 'نظام مواد') {
+            if (!subjectIds || subjectIds.length === 0)
+                throw new Error('يجب تحديد المواد في نظام المواد');
+            const validSubjects = await Subject.findAll({
+                where: {
+                    id: subjectIds,
+                    class_id
+                }
+            });
+            if (validSubjects.length !== subjectIds.length)
+                throw new Error('بعض المواد لا تتبع الصف المحدد');
+            enrollmentSubject = subjectIds;
+        }
+        const enrollments = enrollmentSubject.map((subjectId) => ({
+            userId: student.id,
+            CourseId: subjectId
+        }));
+        await Enrollement.bulkCreate(enrollments, {
+            transaction
+        });
+        await transaction.commit();
         res.status(201).json({
             success: true,
             message: "تم إضافة الطالب بنجاح!",
-            طالب: student.name,
+            طالب: student,
             code: code, // احذفه لاحقًا
-            ينتهي_في: `٥ ${codeExpiresAt.toLocaleDateString('ar-SY', { month: 'long', year: 'numeric' })}`
+            ينتهي_في: `٥ ${codeExpiresAt.toLocaleDateString('ar-SY', { month: 'long', year: 'numeric' })}`,
+            enrollmentSubjects: enrollmentSubject.length
         });
     } catch (err) {
         console.error("خطأ في add_student:", err);
+        await transaction.rollback();
         res.status(500).json({
             error: "فشل في إضافة الطالب",
             تفاصيل: err.message
         });
     }
 };
-
-module.exports.registration_confirmation = async (req, res) =>{
-    
-}
-

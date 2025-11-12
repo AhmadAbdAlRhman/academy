@@ -6,7 +6,12 @@
   "author": "Ahmad",
   "type": "commonjs",
   "main": "server.js",
-  "keywords": ["express", "sequelize", "swagger", "flip-card"],
+  "keywords": [
+    "express",
+    "sequelize",
+    "swagger",
+    "flip-card"
+  ],
   "scripts": {
     "dev": "nodemon swagger.js",
     "start": "node server.js",

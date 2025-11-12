@@ -21,6 +21,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "subjectIds": {
+                  "example": "any"
+                },
                 "name": {
                   "example": "any"
                 },
@@ -30,7 +33,7 @@
                 "registration_system": {
                   "example": "any"
                 },
-                "photo": {
+                "class_id": {
                   "example": "any"
                 }
               }
@@ -73,6 +76,36 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/add_new_subject": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "teacher_name": {
+                  "example": "any"
+                },
+                "teacher_phone": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
           }
         }
       }
