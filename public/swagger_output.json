@@ -53,7 +53,7 @@
         }
       }
     },
-    "/admin/add_new_branch": {
+    "/admin/add_new_class": {
       "post": {
         "description": "",
         "parameters": [
@@ -98,6 +98,9 @@
                 },
                 "teacher_phone": {
                   "example": "any"
+                },
+                "class_id": {
+                  "example": "any"
                 }
               }
             }
@@ -106,6 +109,12 @@
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

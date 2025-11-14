@@ -3,7 +3,7 @@ const {
 } = require('sequelize');
 const sequelize = require('../config/db');
 
-const BranchCourse = sequelize.define('BranchCourse', {
+const class_subject = sequelize.define('class_subject', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -14,4 +14,4 @@ const BranchCourse = sequelize.define('BranchCourse', {
     timestamps: true,
 });
 
-module.exports = BranchCourse;
+module.exports = class_subject;

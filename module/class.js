@@ -4,7 +4,7 @@ const {
 
 const sequelize = require('../config/db');
 
-const Branch = sequelize.define('Branch', {
+const Class = sequelize.define('Class', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -19,4 +19,4 @@ const Branch = sequelize.define('Branch', {
     timestamps: true,
 });
 
-module.exports = Branch;
+module.exports = Class;

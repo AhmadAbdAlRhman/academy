@@ -4,7 +4,7 @@ const {
 
 const sequelize = require('../config/db');
 
-const Course = sequelize.define('Course', {
+const Subjects = sequelize.define('Subjects', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -31,4 +31,4 @@ const Course = sequelize.define('Course', {
     timestamps: true,
 });
 
-module.exports = Course;
+module.exports = Subjects;
