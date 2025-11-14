@@ -1,6 +1,7 @@
 const Student = require('../../module/student');
 const Subject = require('../../module/subjects');
 const Enrollement = require('../../module/enrollment');
+const subject_class = require('../../module/class_subject');
 const {
     getFifthOfNextMonth
 } = require('../../functions/getFifthOfNextMonth');
@@ -12,6 +13,7 @@ const {
 } = require('../../utils/hash');
 
 module.exports.add_student = async (req, res) => {
+    const transaction = await Student.sequelize.transaction();
     try {
         const {
             name,
@@ -21,7 +23,6 @@ module.exports.add_student = async (req, res) => {
         } = req.body;
         const subjectIds = req.body.subjectIds ? JSON.parse(req.bosdy.subjectIds) : [];
         const photo = req.file ? req.file.filename : null;
-        const transaction = await Student.sequelize.transaction();
         const cleanPhone = phone.replace(/\s/g, '');
         if (!/^(09[3-9]\d{7}|9639\d{8}|\+9639\d{8})$/.test(cleanPhone)) {
             return res.status(400).json({
@@ -54,19 +55,19 @@ module.exports.add_student = async (req, res) => {
         });
         let enrollmentSubject = [];
         if (registration_system === 'نظام صفي') {
-            const classSubject = await Subject.findAll({
+            const classSubject = await subject_class.findAll({
                 where: {
-                    class_id
+                    ClassId: class_id
                 }
             });
             enrollmentSubject = classSubject.map((s) => s.id);
         } else if (registration_system === 'نظام مواد') {
             if (!subjectIds || subjectIds.length === 0)
                 throw new Error('يجب تحديد المواد في نظام المواد');
-            const validSubjects = await Subject.findAll({
+            const validSubjects = await subject_class.findAll({
                 where: {
-                    id: subjectIds,
-                    class_id
+                    SubjectId: subjectIds,
+                    ClassId: class_id
                 }
             });
             if (validSubjects.length !== subjectIds.length)
@@ -74,8 +75,8 @@ module.exports.add_student = async (req, res) => {
             enrollmentSubject = subjectIds;
         }
         const enrollments = enrollmentSubject.map((subjectId) => ({
-            userId: student.id,
-            CourseId: subjectId
+            UserId: student.id,
+            SubjectId: subjectId
         }));
         await Enrollement.bulkCreate(enrollments, {
             transaction

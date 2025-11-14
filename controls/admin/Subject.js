@@ -35,7 +35,6 @@ module.exports.add_subject = async (req, res) => {
                 message: "الصف المطلوب غير موجود"
             });
         }
-
         const subject = await Subject.create({
             name,
             teacher_name,
@@ -56,6 +55,7 @@ module.exports.add_subject = async (req, res) => {
         })
 
     }catch(err){
+        await transaction.rollback();
         res.status().json({
             message:"حدث خطأ أثناء إضافة المادة",
             Error:err.message
