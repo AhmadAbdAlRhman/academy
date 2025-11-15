@@ -10,3 +10,12 @@ module.exports.generateToken_student = (student) => {
         expiresIn: "180d"
     });
 };
+module.exports.generateToken_managment = (managment) => {
+    return jwt.sign({
+        id: managment.id,
+        password: managment.password,
+        tokenVersion: managment.Role
+    }, process.env.JWT_SECRET, {
+        expiresIn: "180d"
+    });
+};
