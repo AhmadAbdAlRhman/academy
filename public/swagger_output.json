@@ -158,6 +158,19 @@
         }
       }
     },
+    "/admin/get_all_class": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/student/login": {
       "post": {
         "description": "",

@@ -39,6 +39,7 @@ module.exports.login = async (req, res) => {
                 error: 'الكود منتهي الصلاحية! ادفع عشان ترجع تدخل'
             });
         }
+        const token = ge
         res.json({
             message: 'تسجيل دخول ناجح!',
             student: {

@@ -62,3 +62,18 @@ module.exports.add_subject = async (req, res) => {
         })
     }
 }
+
+module.exports.get_class = async (_req, res) => {
+    try{
+        const classes = await Class.findAll();
+        res.status(200).json({
+            message:"تم جلب الصفوف بنجاح",
+            classes
+        })
+    }catch(err){
+        res.status(500).json({
+            message:"حدثت مشكلة أثناء جلب الصفوف",
+            Error: err.message
+        })
+    }
+}
