@@ -7,6 +7,8 @@ const Subjects = require('./subjects');
 const Lecture = require('./lecture');
 const Intensive_courses = require('./Intensive courses');
 const Enrollment = require('./enrollment');
+const Managment = require('./managment');
+const Ads = require('./ads');
 require('./ads');
 
 // 111111111111111111111111111111111111111111111111111111111111111111111111111111111
@@ -43,6 +45,13 @@ Student.belongsToMany(Subjects,{
 });
 Subjects.belongsToMany(Student,{
     through: Enrollment
+});
+// 666666666666666666666666666666666666666666666666666666666666666666666666666666666
+Managment.hasMany(Ads,{
+    foreignKey: 'managment_id'
+});
+Ads.belongsTo(Managment,{
+    foreignKey: 'managment_id'
 });
 // #################################################################################
 sequelize.sync({

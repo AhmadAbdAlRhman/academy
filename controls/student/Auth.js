@@ -1,3 +1,4 @@
+const { generateToken_student } = require('../../functions/jwt');
 const Student = require('../../module/student');
 const {
     compare
@@ -44,7 +45,8 @@ module.exports.login = async (req, res) => {
                 name: student.name,
                 hasPaid: student.hasPaid,
                 photo: student.photo
-            }
+            },
+            token: generateToken_student(student)
         });
     } catch (err) {
         res.status(500).json({

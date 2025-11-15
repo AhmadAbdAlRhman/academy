@@ -49,7 +49,8 @@ module.exports.add_student = async (req, res) => {
             registration_system: registration_system,
             photo: photo,
             hasPaid: true,
-            codeExpiresAt
+            codeExpiresAt,
+            class_id
         }, {
             transaction
         });
