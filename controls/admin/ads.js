@@ -24,3 +24,18 @@ module.exports.add_ads = async (req, res) => {
         })
     }
 }
+
+module.exports.get_all_ads = async (_req, res) => {
+    try{
+        const ads = await Ads.findAll();
+        res.status(200).json({
+            message:"تم جلب جميع الإعلانات ب نجاح",
+            Ads: ads
+        });
+    }catch(err){
+        res.status(500).json({
+            message:"حدث خطأ أثناء جلب الإعلانات",
+            Error: err.message
+        })
+    }
+}

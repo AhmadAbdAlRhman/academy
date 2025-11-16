@@ -11,5 +11,15 @@ const storage_student = multer.diskStorage({
         cb(null, fileName);
     }
 });
+const storage_intensive = multer.diskStorage({
+    destination:  (_req, _res, cb) => {
+        cb(null, 'uploads/intensive');
+    },
+    filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`;
+        cb(null, fileName);
+    }
+});
 
-module.exports = {storage_student};
+module.exports = {storage_student, storage_intensive};
