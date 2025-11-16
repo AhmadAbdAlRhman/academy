@@ -9,8 +9,8 @@ const Enrollment = require('./enrollment');
 const Managment = require('./managment');
 const Ads = require('./ads');
 // 1. Class ↔ Subjects (many-to-many)
-Class.belongsToMany(Subjects, { through: class_subject, foreignKey: "ClassId" });
-Subjects.belongsToMany(Class, { through: class_subject, foreignKey: "SubjectId" });
+Class.belongsToMany(Subjects, { through: class_subject, foreignKey: "ClassId", as: 'subjects' });
+Subjects.belongsToMany(Class, { through: class_subject, foreignKey: "SubjectId", as: 'classes' });
 
 // 2. Class ↔ Students (one-to-many)
 Class.hasMany(Student, { foreignKey: "class_id" });

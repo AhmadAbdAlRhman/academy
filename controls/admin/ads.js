@@ -39,3 +39,24 @@ module.exports.get_all_ads = async (_req, res) => {
         })
     }
 }
+
+module.exports.get_one_ads = async(req, res) => {
+    try{
+        const ads_id = req.params.ads_id;
+        const ads = await Ads.findByPk(ads_id);
+        if(!ads){
+            return res.status(404).json({
+                message:"لا يوجد هذا الإعلان في قاعدة البيانات"
+            });
+        }
+        return res.status(200).json({
+            message:"تم جلب الإعلان بنجاح",
+            ads
+        });
+    }catch(err){
+        return res.status(500).json({
+            message:"حدث خطأ أثناء جلب الإعلان ",
+            Error: err.message
+        })
+    }
+}

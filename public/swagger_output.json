@@ -119,6 +119,33 @@
         }
       }
     },
+    "/admin/subjects/{class_id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/admin/add_admin": {
       "post": {
         "description": "",
@@ -200,6 +227,22 @@
         }
       }
     },
+    "/admin/one_ads": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/admin/new_intensive": {
       "post": {
         "description": "",
@@ -232,6 +275,54 @@
     },
     "/admin/deleted_intensives": {
       "delete": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/all_intensive": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/one_intensive/{intensive_id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "intensive_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/enrollment_intensive": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/unenroll_intensive": {
+      "post": {
         "description": "",
         "responses": {
           "default": {
@@ -278,6 +369,16 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/student/mine_intensive": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
