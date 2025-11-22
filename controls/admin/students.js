@@ -21,6 +21,7 @@ module.exports.add_student = async (req, res) => {
             phone,
             registration_system,
             class_id,
+            year,
             subjectIds
         } = req.body;
         const photo = req.file ? req.file.filename : null;
@@ -41,17 +42,18 @@ module.exports.add_student = async (req, res) => {
             });
         }
         const code = generateCode();
-        const hashedCode = await hash(code); // أضف await هنا
+        const hashedCode = await hash(code);
         const codeExpiresAt = getFifthOfNextMonth();
         const student = await Student.create({
-            name,
+            name: name,
             phone: cleanPhone,
             code: hashedCode,
             registration_system: registration_system,
             photo: photo,
             hasPaid: true,
-            codeExpiresAt,
-            class_id
+            codeExpiresAt: codeExpiresAt,
+            class_id: class_id,
+            year: year
         }, {
             transaction
         });
@@ -63,9 +65,9 @@ module.exports.add_student = async (req, res) => {
                     as: "subjects"
                 }]
             });
-            if (!classInstance)
+            if (!classSubject)
                 throw new Error("الصف غير موجود");
-            if (!classInstance.subjects || classInstance.subjects.length === 0)
+            if (!classSubject.subjects || classSubject.subjects.length === 0)
                 throw new Error("لا توجد مواد لهذا الصف");
             enrollmentSubject = classSubject.subjects.map(sub => sub.id);
         } else if (registration_system === 'نظام مواد') {
@@ -94,7 +96,7 @@ module.exports.add_student = async (req, res) => {
             success: true,
             message: "تم إضافة الطالب بنجاح!",
             طالب: student,
-            code: code, // احذفه لاحقًا
+            code: code,
             ينتهي_في: `٥ ${codeExpiresAt.toLocaleDateString('ar-SY', { month: 'long', year: 'numeric' })}`,
             enrollmentSubjects: enrollmentSubject.length
         });

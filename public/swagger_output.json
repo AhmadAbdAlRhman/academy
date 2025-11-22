@@ -33,6 +33,9 @@
                 "class_id": {
                   "example": "any"
                 },
+                "year": {
+                  "example": "any"
+                },
                 "subjectIds": {
                   "example": "any"
                 }
@@ -88,9 +91,17 @@
         }
       }
     },
-    "/admin/one_student": {
+    "/admin/one_student/{student_id}": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"

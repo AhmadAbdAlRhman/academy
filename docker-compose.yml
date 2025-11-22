@@ -7,13 +7,13 @@ services:
       MYSQL_ROOT_PASSWORD: Ahmad45@2000
       MYSQL_DATABASE: academy
     ports:
-      - "3306:3306"
+      - "3308:3000"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1Ahmad45@2000"]
       interval: 3s
-      timeout: 3s
+      timeout: 3s 
       retries: 30
       start_period: 10s
 

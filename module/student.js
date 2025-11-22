@@ -23,9 +23,9 @@ const Student = sequelize.define('studenty', {
         allowNull: false
     },
     registration_system: {
-        type: DataTypes.ENUM('نظام صفي','نظام مواد'),
+        type: DataTypes.ENUM('نظام صفي', 'نظام مواد'),
         allowNull: false,
-        defaultValue:'نظام صفي'
+        defaultValue: 'نظام صفي'
     },
     hasPaid: {
         type: DataTypes.BOOLEAN,
@@ -35,17 +35,20 @@ const Student = sequelize.define('studenty', {
         type: DataTypes.DATE,
         allowNull: true,
     },
-    photo:{
+    photo: {
         type: DataTypes.STRING(100),
         allowNull: true
     },
-    excellent:{
+    excellent: {
         type: DataTypes.BOOLEAN,
         required: false
     },
-    year:{
+    year: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        defaultValue: () => {
+            return new Date().getFullYear();
+        }
     }
 }, {
     tableName: 'students',

@@ -7,12 +7,6 @@ const sequelize = new Sequelize(process.env.DataBase, process.env.DataUser, proc
     dialect: 'mysql',
     port: process.env.DB_PORT,
     logging: false,
-    dialectOptions: {
-        ssl: {
-            require: true,  
-            rejectUnauthorized: false
-        }
-    }
 });
 
 (async () => {
