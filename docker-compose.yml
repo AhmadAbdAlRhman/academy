@@ -1,0 +1,41 @@
+# docker-compose.yml ← احفظ هذا بالضبط
+services:
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: Ahmad45@2000
+      MYSQL_DATABASE: academy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1Ahmad45@2000"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  academy-api:
+    build: .
+    ports:
+      - "3025:3025"
+    environment:
+      - NODE_ENV=production
+      - PORT=3025
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=Ahmad45@2000
+      - DB_NAME=academy
+    depends_on:
+      mysql:
+        condition: service_healthy   # ← هذا السطر السحري ينتظر لحد ما MySQL يكون جاهز 100%
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

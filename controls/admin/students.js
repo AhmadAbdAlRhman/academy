@@ -1,6 +1,6 @@
 const Student = require('../../module/student');
 const Subject = require('../../module/subjects');
-const Enrollement = require('../../module/enrollment');
+// const Enrollement = require('../../module/enrollment');
 const subject_class = require('../../module/class_subject');
 const {
     getFifthOfNextMonth
@@ -11,6 +11,7 @@ const {
 const {
     hash
 } = require('../../utils/hash');
+const Class = require('../../module/class');
 
 module.exports.add_student = async (req, res) => {
     const transaction = await Student.sequelize.transaction();
@@ -19,9 +20,9 @@ module.exports.add_student = async (req, res) => {
             name,
             phone,
             registration_system,
-            class_id
+            class_id,
+            subjectIds
         } = req.body;
-        const subjectIds = req.body.subjectIds ? JSON.parse(req.bosdy.subjectIds) : [];
         const photo = req.file ? req.file.filename : null;
         const cleanPhone = phone.replace(/\s/g, '');
         if (!/^(09[3-9]\d{7}|9639\d{8}|\+9639\d{8})$/.test(cleanPhone)) {
@@ -56,32 +57,38 @@ module.exports.add_student = async (req, res) => {
         });
         let enrollmentSubject = [];
         if (registration_system === 'نظام صفي') {
-            const classSubject = await subject_class.findAll({
-                where: {
-                    ClassId: class_id
-                }
+            const classSubject = await Class.findByPk(class_id, {
+                include: [{
+                    model: Subject,
+                    as: "subjects"
+                }]
             });
-            enrollmentSubject = classSubject.map((s) => s.id);
+            if (!classInstance)
+                throw new Error("الصف غير موجود");
+            if (!classInstance.subjects || classInstance.subjects.length === 0)
+                throw new Error("لا توجد مواد لهذا الصف");
+            enrollmentSubject = classSubject.subjects.map(sub => sub.id);
         } else if (registration_system === 'نظام مواد') {
             if (!subjectIds || subjectIds.length === 0)
                 throw new Error('يجب تحديد المواد في نظام المواد');
-            const validSubjects = await subject_class.findAll({
-                where: {
-                    SubjectId: subjectIds,
-                    ClassId: class_id
-                }
+            const validSubjects = await Class.findByPk(class_id, {
+                include: [{
+                    model: Subject,
+                    as: "subjects",
+                    where: {
+                        id: subjectIds
+                    }
+                }]
             });
             if (validSubjects.length !== subjectIds.length)
                 throw new Error('بعض المواد لا تتبع الصف المحدد');
             enrollmentSubject = subjectIds;
         }
-        const enrollments = enrollmentSubject.map((subjectId) => ({
-            UserId: student.id,
-            SubjectId: subjectId
-        }));
-        await Enrollement.bulkCreate(enrollments, {
-            transaction
-        });
+        if (enrollmentSubject.length > 0) {
+            await student.addSubjects(enrollmentSubject, {
+                transaction
+            });
+        }
         await transaction.commit();
         res.status(201).json({
             success: true,
@@ -100,3 +107,132 @@ module.exports.add_student = async (req, res) => {
         });
     }
 };
+
+module.exports.get_students_with_filters = async (req, res) => {
+    try {
+        let {
+            page = 1, limit = 10, classId, year
+        } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+        const offset = (page - 1) * limit;
+        let filters = {};
+        if (classId) {
+            filters.ClassId = classId;
+        }
+        if (year) {
+            filters.year = year;
+        }
+        const {
+            count,
+            rows: students
+        } = await Student.findAndCountAll({
+            where: filters,
+            limit: limit,
+            offset: offset,
+            include: [{
+                    model: Subjects,
+                    as: "subjects",
+                    through: {
+                        attributes: []
+                    },
+                    attributes: ["id", "name", "teacher_name"]
+                },
+                {
+                    model: Class,
+                    as: "class_info",
+                    attributes: ["id", "name"]
+                }
+            ],
+            attributes: ["id", "name", "phone", "photo", "year", "ClassId"]
+        });
+        return res.status(200).json({
+            message: "تم جلب الطلاب بنجاح",
+            page,
+            limit,
+            total: count,
+            pages: Math.ceil(count / limit),
+            students
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "خطأ في السيرفر",
+            Error: err.message
+        });
+    }
+};
+
+module.exports.get_student = async (req, res) => {
+    try {
+        const student_id = req.params.student_id;
+        if (!student_id || isNaN(student_id)) {
+            return res.status(400).json({
+                message: "معرف الطالب غير صالح",
+                subjects: []
+            });
+        }
+        const student = await Student.findByPk(student_id, {
+            include: [{
+                model: Subject,
+                as: "subjects",
+                through: {
+                    attributes: []
+                },
+                attributes: [
+                    "id",
+                    "name",
+                    "teacher_name",
+                    "teacher_phone",
+                    "teacher_photo",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            }],
+            attributes: ["id", "name", "phone", "photo", "registration_system", "year"]
+        });
+        if (!student) {
+            return res.status(404).json({
+                message: "الطالب غير موجود",
+                subjects: []
+            });
+        }
+        return res.status(200).json({
+            message: "تم جلب بيانات الطالب ومواده بنجاح",
+            student_id: student.id,
+            student_name: student.name,
+            subjects_count: student.subjects.length,
+            subjects: student.subjects
+        });
+    } catch (err) {
+        console.error("خطأ في get_student_subjects:", err);
+        return res.status(500).json({
+            message: "حدث خطأ في الخادم",
+            error: err.message
+        });
+    }
+}
+
+module.exports.put_student_excellent = async (req, res) => {
+    try{
+        const student_id = req.body;
+        const student = await Student.findByPk(student_id);
+        if(!student){
+            return res.status(404).json({
+                message:"لا يوجد هذا الطالب في قاعدة البيانات"
+            });
+        }
+        if (student.excellent){
+            student.excellent = false;
+        }else{
+            student.excellent = true;
+        }
+        return res.statud(200).json({
+            message:''
+        })
+        await student.save();
+
+    }catch(err){
+
+    }
+}

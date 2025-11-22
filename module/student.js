@@ -4,7 +4,7 @@ const {
 
 const sequelize = require('../config/db');
 
-const Student = sequelize.define('User', {
+const Student = sequelize.define('studenty', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -38,6 +38,14 @@ const Student = sequelize.define('User', {
     photo:{
         type: DataTypes.STRING(100),
         allowNull: true
+    },
+    excellent:{
+        type: DataTypes.BOOLEAN,
+        required: false
+    },
+    year:{
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, {
     tableName: 'students',

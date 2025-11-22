@@ -34,18 +34,14 @@ module.exports.login = async (req, res) => {
                 error: "الكود خاطئ"
             });
         }
-        if (student.codeExpiresAt && new Date() > student.codeExpiresAt && !student.hasPaid) {
+        if (new Date() > student.codeExpiresAt && !student.hasPaid) {
             return res.status(403).json({
                 error: 'الكود منتهي الصلاحية! ادفع عشان ترجع تدخل'
             });
         }
         res.json({
             message: 'تسجيل دخول ناجح!',
-            student: {
-                name: student.name,
-                hasPaid: student.hasPaid,
-                photo: student.photo
-            },
+            student: student,
             token: generateToken_student(student)
         });
     } catch (err) {
