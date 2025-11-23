@@ -27,7 +27,7 @@ router.get('/add_ads', Admin_ads.add_ads);
 //10(جلب جميع الإعلانات
 router.get('/all_ads', Admin_ads.get_all_ads);
 //11( جلب إعلان واحد
-router.get('/one_ads', Admin_ads.get_one_ads);
+router.get('/one_ads/:ads_id', Admin_ads.get_one_ads);
 //12( إضافة دورة مكثقة
 router.post('/new_intensive', upload_intensive.single('photo'), Admin_intensive.add_intensive);
 //13( تعديل بيانات الدورة المكثفة
@@ -44,4 +44,8 @@ router.get('/one_intensive/:intensive_id', Admin_intensive.get_one_intensive);
 router.post('/enrollment_intensive', Admin_intensive.enrollment_intensive);
 //19(  إلغاء تسجيل بالدورات المكثفة
 router.post('/unenroll_intensive', Admin_intensive.unenroll_intensive);
+//20( تغيير تقييم الطالب
+router.put('/change_excellent', Admin_Student.put_student_excellent);
+//21( جلب جميع الطلاب المتفوقين
+router.get('/excellent_student', Admin_Student.get_excellent_student);
 module.exports = router;

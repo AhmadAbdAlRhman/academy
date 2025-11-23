@@ -216,25 +216,56 @@ module.exports.get_student = async (req, res) => {
 }
 
 module.exports.put_student_excellent = async (req, res) => {
-    try{
-        const student_id = req.body;
-        const student = await Student.findByPk(student_id);
-        if(!student){
+    try {
+        const {
+            student_id
+        } = req.body;
+        if (!student_id) {
             return res.status(404).json({
-                message:"لا يوجد هذا الطالب في قاعدة البيانات"
+                message: "يرجى إرسال رقم التعريف الخاص للطالب."
             });
         }
-        if (student.excellent){
-            student.excellent = false;
-        }else{
-            student.excellent = true;
+        const student = await Student.findByPk(student_id);
+        if (!student) {
+            return res.status(404).json({
+                message: "لا يوجد هذا الطالب في قاعدة البيانات"
+            });
         }
-        return res.statud(200).json({
-            message:''
-        })
+        student.excellent = !student.excellent;
         await student.save();
+        const message = student.excellent ?
+            "تم تفعيل خاصية الطالب الممتاز" :
+            "تم إلغاء خاصية الطالب الممتاز";
+        return res.statud(200).json({
+            message: message,
+            "اسم الطالب": student.name,
+            "تقييم الطالب": student.excellent
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "حدث خطأ اثناء تغيير ال excellent",
+            Error: err.message
+        })
+    }
+}
 
-    }catch(err){
-
+module.exports.get_excellent_student = async (_req, res) => {
+    try {
+        const excellent_student = await Student.findAll({
+            where: {
+                excellent: true
+            }
+        });
+        return res.status(200).json({
+            message: excellent_student.length > 0 ?
+                "تم جلب الطلاب المتفوقين" :
+                "لا يوجد طلاب متفوقين",
+            excellent_student
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "حدث خطأ أثناء جلب الطلاب المتفوقين",
+            Error: err.message
+        })
     }
 }
