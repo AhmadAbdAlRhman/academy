@@ -24,7 +24,6 @@ Class.hasMany(Student, {
 Student.belongsTo(Class, {
     foreignKey: "class_id"
 });
-
 // 3. Class_Subject ↔ Lecture (one-to-many)
 class_subject.hasMany(Lecture, {
     foreignKey: "class_subject_id"

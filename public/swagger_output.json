@@ -292,9 +292,17 @@
         }
       }
     },
-    "/admin/one_ads": {
+    "/admin/one_ads/{ads_id}": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "ads_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -392,6 +400,49 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/admin/change_excellent": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "student_id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/excellent_student": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

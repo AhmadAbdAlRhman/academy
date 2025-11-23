@@ -41,7 +41,7 @@ const Student = sequelize.define('studenty', {
     },
     excellent: {
         type: DataTypes.BOOLEAN,
-        required: false
+        defaultValue: false
     },
     year: {
         type: DataTypes.INTEGER,

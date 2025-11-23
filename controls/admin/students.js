@@ -133,7 +133,7 @@ module.exports.get_students_with_filters = async (req, res) => {
             limit: limit,
             offset: offset,
             include: [{
-                    model: Subjects,
+                    model: Subject,
                     as: "subjects",
                     through: {
                         attributes: []
@@ -142,11 +142,10 @@ module.exports.get_students_with_filters = async (req, res) => {
                 },
                 {
                     model: Class,
-                    as: "class_info",
                     attributes: ["id", "name"]
                 }
             ],
-            attributes: ["id", "name", "phone", "photo", "year", "ClassId"]
+            attributes: ["id", "name", "phone", "photo", "year","excellent", "class_id"]
         });
         return res.status(200).json({
             message: "تم جلب الطلاب بنجاح",
@@ -236,7 +235,7 @@ module.exports.put_student_excellent = async (req, res) => {
         const message = student.excellent ?
             "تم تفعيل خاصية الطالب الممتاز" :
             "تم إلغاء خاصية الطالب الممتاز";
-        return res.statud(200).json({
+        return res.status(200).json({
             message: message,
             "اسم الطالب": student.name,
             "تقييم الطالب": student.excellent
