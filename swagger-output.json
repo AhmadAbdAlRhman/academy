@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Acadamy Project",
-    "description": "API Documentation",
+    "title": "Academy Project",
+    "description": "API Documentation for Academy Management System",
     "version": "1.0.0"
   },
   "host": "localhost:3025",
@@ -13,36 +13,80 @@
   "paths": {
     "/admin/add_student": {
       "post": {
-        "description": "",
+        "description": "Add a new student to the academy",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "phone": {
-                  "example": "any"
-                },
-                "registration_system": {
-                  "example": "any"
-                },
-                "photo": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Student name"
+          },
+          {
+            "name": "phone",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Student phone number (format: 0933123456 or 963933123456)"
+          },
+          {
+            "name": "registration_system",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "enum": ["نظام صفي", "نظام مواد"],
+            "description": "Registration system type"
+          },
+          {
+            "name": "class_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Class ID"
+          },
+          {
+            "name": "year",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Academic year"
+          },
+          {
+            "name": "subjectIds",
+            "in": "formData",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Array of subject IDs (required if registration_system is 'نظام مواد')"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "type": "file",
+            "required": false,
+            "description": "Student photo"
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Student created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean" },
+                "message": { "type": "string" },
+                "طالب": { "type": "object" },
+                "code": { "type": "string" },
+                "ينتهي_في": { "type": "string" },
+                "enrollmentSubjects": { "type": "integer" }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request - Invalid phone number or duplicate name"
           },
           "500": {
             "description": "Internal Server Error"
@@ -50,18 +94,115 @@
         }
       }
     },
-    "/admin/add_new_branch": {
+    "/admin/all_students": {
+      "get": {
+        "description": "Get all students with optional filters and pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "default": 10,
+            "description": "Number of items per page"
+          },
+          {
+            "name": "classId",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "Filter by class ID"
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter by year"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "page": { "type": "integer" },
+                "limit": { "type": "integer" },
+                "total": { "type": "integer" },
+                "pages": { "type": "integer" },
+                "students": { "type": "array" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/one_student/{student_id}": {
+      "get": {
+        "description": "Get a specific student by ID with their subjects",
+        "parameters": [
+          {
+            "name": "student_id",
+            "in": "path",
+            "type": "integer",
+            "required": true,
+            "description": "Student ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "student_id": { "type": "integer" },
+                "student_name": { "type": "string" },
+                "subjects_count": { "type": "integer" },
+                "subjects": { "type": "array" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid student ID"
+          },
+          "404": {
+            "description": "Student not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/add_new_class": {
       "post": {
-        "description": "",
+        "description": "Add a new class",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["name"],
               "properties": {
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "description": "Class name"
                 }
               }
             }
@@ -69,7 +210,649 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Class created successfully"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/add_new_subject": {
+      "post": {
+        "description": "Add a new subject to a class",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "class_id"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Subject name"
+                },
+                "teacher_name": {
+                  "type": "string",
+                  "description": "Teacher name"
+                },
+                "teacher_phone": {
+                  "type": "string",
+                  "description": "Teacher phone"
+                },
+                "class_id": {
+                  "type": "integer",
+                  "description": "Class ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Subject created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Missing required fields"
+          },
+          "404": {
+            "description": "Class not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/subjects/{class_id}": {
+      "get": {
+        "description": "Get all subjects for a specific class",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "path",
+            "type": "integer",
+            "required": true,
+            "description": "Class ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "class_id": { "type": "integer" },
+                "class_name": { "type": "string" },
+                "subjects_count": { "type": "integer" },
+                "subjects": { "type": "array" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid class ID"
+          },
+          "404": {
+            "description": "Class not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/add_admin": {
+      "post": {
+        "description": "Add a new admin user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["user_name", "password", "Role"],
+              "properties": {
+                "user_name": {
+                  "type": "string",
+                  "description": "Admin username"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "Admin password"
+                },
+                "Role": {
+                  "type": "string",
+                  "description": "Admin role"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Username already exists"
+          },
+          "404": {
+            "description": "Bad Request - Missing required fields"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/get_all_class": {
+      "get": {
+        "description": "Get all classes",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "classes": { "type": "array" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/add_ads": {
+      "get": {
+        "description": "Add a new advertisement",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Ad title"
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Ad description"
+          },
+          {
+            "name": "photo",
+            "in": "query",
+            "type": "file",
+            "required": true,
+            "description": "Ad photo"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ad created successfully"
+          },
+          "404": {
+            "description": "Bad Request - Missing required fields"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/all_ads": {
+      "get": {
+        "description": "Get all advertisements",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "Ads": { "type": "array" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/one_ads/{ads_id}": {
+      "get": {
+        "description": "Get a specific advertisement by ID",
+        "parameters": [
+          {
+            "name": "ads_id",
+            "in": "path",
+            "type": "integer",
+            "required": true,
+            "description": "Advertisement ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "ads": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "Advertisement not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/new_intensive": {
+      "post": {
+        "description": "Add a new intensive course",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course period"
+          },
+          {
+            "name": "start_time",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course start time"
+          },
+          {
+            "name": "times",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course times"
+          },
+          {
+            "name": "class_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Class ID"
+          },
+          {
+            "name": "subject_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Subject ID"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "type": "file",
+            "required": false,
+            "description": "Course photo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Intensive course created successfully"
+          },
+          "404": {
+            "description": "Bad Request - Missing required fields or invalid class/subject"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/update_intensive": {
+      "put": {
+        "description": "Update an existing intensive course",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "intensive_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Intensive course ID"
+          },
+          {
+            "name": "period",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course period"
+          },
+          {
+            "name": "start_time",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course start time"
+          },
+          {
+            "name": "times",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Course times"
+          },
+          {
+            "name": "class_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Class ID"
+          },
+          {
+            "name": "subject_id",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "Subject ID"
+          },
+          {
+            "name": "photo",
+            "in": "formData",
+            "type": "file",
+            "required": false,
+            "description": "Course photo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Intensive course updated successfully"
+          },
+          "404": {
+            "description": "Bad Request - Missing required fields or course not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/deleted_intensive": {
+      "delete": {
+        "description": "Delete a specific intensive course",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["intensive_id"],
+              "properties": {
+                "intensive_id": {
+                  "type": "integer",
+                  "description": "Intensive course ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Intensive course deleted successfully"
+          },
+          "404": {
+            "description": "Intensive course not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/deleted_intensives": {
+      "delete": {
+        "description": "Delete all intensive courses",
+        "responses": {
+          "200": {
+            "description": "All intensive courses deleted successfully"
+          },
+          "404": {
+            "description": "No intensive courses found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/all_intensive": {
+      "get": {
+        "description": "Get all intensive courses with optional filters and pagination",
+        "parameters": [
+          {
+            "name": "class_id",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "Filter by class ID"
+          },
+          {
+            "name": "subject_id",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "description": "Filter by subject ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "default": 10,
+            "description": "Number of items per page"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer",
+            "required": false,
+            "default": 1,
+            "description": "Page number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "total": { "type": "integer" },
+                "currentPage": { "type": "integer" },
+                "totalPages": { "type": "integer" },
+                "data": { "type": "array" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/one_intensive/{intensive_id}": {
+      "get": {
+        "description": "Get a specific intensive course by ID",
+        "parameters": [
+          {
+            "name": "intensive_id",
+            "in": "path",
+            "type": "integer",
+            "required": true,
+            "description": "Intensive course ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "one_intensive": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "Intensive course not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/enrollment_intensive": {
+      "post": {
+        "description": "Enroll a student in an intensive course",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["UserId", "IntensiveCourseId"],
+              "properties": {
+                "UserId": {
+                  "type": "integer",
+                  "description": "Student ID"
+                },
+                "IntensiveCourseId": {
+                  "type": "integer",
+                  "description": "Intensive course ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment successful"
+          },
+          "404": {
+            "description": "Student or intensive course not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/unenroll_intensive": {
+      "post": {
+        "description": "Unenroll a student from an intensive course",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["UserId", "IntensiveCourseId"],
+              "properties": {
+                "UserId": {
+                  "type": "integer",
+                  "description": "Student ID"
+                },
+                "IntensiveCourseId": {
+                  "type": "integer",
+                  "description": "Intensive course ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unenrollment successful"
+          },
+          "404": {
+            "description": "Student or intensive course not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/change_excellent": {
+      "put": {
+        "description": "Toggle excellent status for a student",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["student_id"],
+              "properties": {
+                "student_id": {
+                  "type": "integer",
+                  "description": "Student ID"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Excellent status updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "اسم الطالب": { "type": "string" },
+                "تقييم الطالب": { "type": "boolean" }
+              }
+            }
+          },
+          "404": {
+            "description": "Student not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/excellent_student": {
+      "get": {
+        "description": "Get all excellent students",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "excellent_student": { "type": "array" }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -79,19 +862,23 @@
     },
     "/student/login": {
       "post": {
-        "description": "",
+        "description": "Student login with name and code",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["name", "code"],
               "properties": {
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "description": "Student name"
                 },
                 "code": {
-                  "example": "any"
+                  "type": "string",
+                  "description": "Student access code"
                 }
               }
             }
@@ -99,25 +886,69 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Login successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "student": { "type": "object" },
+                "token": { "type": "string" }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request - Missing name or code"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - Invalid code"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - Code expired or deleted"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Not Found - Student not found"
           },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
+    },
+    "/student/mine_intensive": {
+      "get": {
+        "description": "Get all intensive courses for the authenticated student",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "courses": { "type": "array" }
+              }
+            }
+          },
+          "404": {
+            "description": "Student not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT token for authentication. Format: Bearer {token}"
     }
   }
 }
