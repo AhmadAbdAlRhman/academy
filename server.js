@@ -14,7 +14,7 @@ const student = require('./routes/student');
 app.use('/admin', admin);
 app.use('/student', student);
 require('dotenv').config();
-const swaggerDocument = require('./swagger-output.json');
+const swaggerDocument = require('./public/swagger_output.json');
 app.use('/api_docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(3025, () => {
     console.log(`🚀 Server listening on http://localhost:3025`);
